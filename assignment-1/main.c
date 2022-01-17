@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
             close(pipeFD[1]);
             printf("Before getting text\n");
             char buffer[250];
-		    read(pipeFD[0], buffer, sizeof(buffer));
+	    read(pipeFD[0], buffer, sizeof(buffer));
             // close(pipeFD[0]);
             printf("Getting text from child\n");
             printf("%s\n", buffer);
@@ -54,29 +54,29 @@ int main(int argc, char *argv[]) {
 
             int len1 = snprintf( NULL, 0, "%d", pipeFD[0] );
             char* fd0 = malloc( len1 + 1 );
-            snprintf( n1, len1 + 1, "%d", pipeFD[0] );
+            snprintf( fd0, len1 + 1, "%d", pipeFD[0] );
 
             int len2 = snprintf( NULL, 0, "%d", pipeFD[1] );
             char* fd1 = malloc( len2 + 1 );
-            snprintf( n2, len2 + 1, "%d", pipeFD[1] );
+            snprintf( fd1, len2 + 1, "%d", pipeFD[1] );
             // exit(0);
             if (i == 0) {
                 printf("inside child\n");
                 execlp("./sum", "sum", fd0, fd1, n1, n2, NULL);
                 // exit(0);
             }
-            // else if (i == 1) {
-            //     execlp("./sub", "sub", n1, n2, NULL);
-            // }
-            // else if (i == 2) {
-            //     execlp("./mul", "mul", n1, n2, NULL);
-            // }
-            // else {
-            //     execlp("./div", "div", n1, n2, NULL);
-            // }
+            else if (i == 1) {
+                execlp("./sub", "sub", fd0, fd1, a, b, NULL);
+            }
+            else if (i == 2) {
+                execlp("./mul", "mul", fd0, fd1, n1, n2, NULL);
+            }
+            else {
+                execlp("./div", "div", fd0, fd1, n1, n2, NULL);
+            }
             cpid = getpid();
             printf("Child process : %u\n", cpid);
-            // exit(0);
+            exit(0);
         }
     }
 
