@@ -36,6 +36,7 @@ int main(int argc, char const *argv[]) {
         exit(-1);
     }
     write(fd, str, strlen(str) + 1);
+    close(fd);
 
     for (i = 0; i < 1; i--) {
         char msg[200];
@@ -46,8 +47,21 @@ int main(int argc, char const *argv[]) {
         }
         scanf("%s", msg);
         write(fd, msg, strlen(msg) + 1);
-    	//close(fd);
+    	close(fd);
         if (!strcmp(msg, "Bye")) {
+            fd = open(argv[1], O_RDONLY);
+            if (fd < 0) {
+                printf("File descriptor is not created\n");
+                exit(-1);
+            }
+
+            read(fd, msg, sizeof(msg));
+        	close(fd);
+
+            // Display to the monitor.
+        	// write(STDOUT_FILENO, buffer, strlen(buffer));
+            printf("%s\n", msg);
+
             exit(0);
         }
     }

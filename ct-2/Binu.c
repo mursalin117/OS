@@ -19,13 +19,22 @@ int main(int argc, char const *argv[]) {
             exit(-1);
         }
         read(fd, buffer, sizeof(buffer));
-    	//close(fd);
+    	close(fd);
 
         // Display to the monitor.
     	// write(STDOUT_FILENO, buffer, strlen(buffer));
         printf("%s\n", buffer);
 
         if (!strcmp(buffer, "Bye")) {
+            fd = open(argv[1], O_WRONLY);
+            if (fd < 0) {
+                printf("File descriptor is not created\n");
+                exit(-1);
+            }
+            strcpy(buffer, "Binu: Bye!");
+            write(fd, buffer, strlen(buffer) + 1);
+        	close(fd);
+
             exit(0);
         }
 
