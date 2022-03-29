@@ -4,7 +4,7 @@
 
 int main(int argc, char const *argv[]) {
     int policy;
-    struct sched_param param;
+    struct sched_param param, param2;
 
     policy = sched_getscheduler(0);
     printf("Scheduling Policy: %d\n", policy);
@@ -16,10 +16,13 @@ int main(int argc, char const *argv[]) {
     printf("Minimum Priority of SCHED_OTHER: %d\n", sched_get_priority_min(SCHED_FIFO));
     printf("Maximum Priority of SCHED_OTHER: %d\n", sched_get_priority_max(SCHED_FIFO));
 
-    param.sched_priority = 34;
+    param.sched_priority = 3;
     sched_setscheduler(0, SCHED_FIFO, &param);
+
+    policy = sched_getscheduler(0);
+    sched_getparam(0, &param2);
     printf("Scheduling Policy: %d\n", policy);
-    printf("Scheduling Priority: %d\n", get_priority());
+    printf("Scheduling Priority: %d\n", param2.sched_priority);
 
     return 0;
 }
