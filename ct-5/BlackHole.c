@@ -4,7 +4,11 @@
 #include <unistd.h>
 #include <sys/syscall.h>
 
+pthread_mutex_t key;
+
 void thread1 () {
+    pthread_mutex_lock(&key);
+
     pid_t pid, tid;
     int cpuID;
     long cpuNo;
@@ -13,18 +17,18 @@ void thread1 () {
     pid = getpid();
     tid = syscall(SYS_gettid);
     cpuNo = sched_getcpu();
-    printf("Nebula: Thread-X (PID: %d, TID: %d).\n", pid, tid);
+    printf("BlackHole: Thread-X (PID: %d, TID: %d).\n", pid, tid);
 
     // showing which cpu is using
     cpuID = sched_getcpu();
-    printf("At first, CPU ID: %d\n", cpuID);
+    printf("[BlackHole-X] At first, CPU ID: %d\n", cpuID);
 
     // showing no of cpu avaiable in the pc
     cpuNo = sysconf(_SC_NPROCESSORS_ONLN);
-    printf("No. of available CPUS: %ld\n", cpuNo);
+    printf("[BlackHole-X] No. of available CPUS: %ld\n", cpuNo);
 
     // showing available cpu
-    printf("Available CPUS are:\n");
+    printf("[BlackHole-X] Available CPUS are:\n");
     sched_getaffinity(0, sizeof(cpu_set_t), &mask);
     for (int i = 0; i < cpuNo; i++) {
         printf("%d ", CPU_ISSET(i, &mask));
@@ -36,18 +40,22 @@ void thread1 () {
     sched_setaffinity(0, sizeof(cpu_set_t), &mask);
 
     //sched_getaffinity(0, sizeof(cpu_set_t), &mask);
-    printf("After selecting CPU-2\n");
-    printf("Now Available CPU is:\n");
+    printf("[BlackHole-X] After selecting CPU-2\n");
+    printf("[BlackHole-X] Now Available CPU is:\n");
     for (int i = 0; i < cpuNo; i++) {
         printf("%d ", CPU_ISSET(i, &mask));
     }
     printf("\n");
 
     cpuID = sched_getcpu();
-    printf("Now CPU ID: %d\n", cpuID);
+    printf("[BlackHole-X] Now CPU ID: %d\n", cpuID);
+
+    pthread_mutex_unlock(&key);
 }
 
 void thread2 () {
+    pthread_mutex_lock(&key);
+
     pid_t pid, tid;
     int cpuID;
     long cpuNo;
@@ -56,18 +64,18 @@ void thread2 () {
     pid = getpid();
     tid = syscall(SYS_gettid);
     cpuNo = sched_getcpu();
-    printf("Nebula: Thread-X (PID: %d, TID: %d).\n", pid, tid);
+    printf("BlackHole: Thread-Y (PID: %d, TID: %d).\n", pid, tid);
 
     // showing which cpu is using
     cpuID = sched_getcpu();
-    printf("At first, CPU ID: %d\n", cpuID);
+    printf("[BlackHole-Y] At first, CPU ID: %d\n", cpuID);
 
     // showing no of cpu avaiable in the pc
     cpuNo = sysconf(_SC_NPROCESSORS_ONLN);
-    printf("No. of available CPUS: %ld\n", cpuNo);
+    printf("[BlackHole-Y] No. of available CPUS: %ld\n", cpuNo);
 
     // showing available cpu
-    printf("Available CPUS are:\n");
+    printf("[BlackHole-Y] Available CPUS are:\n");
     sched_getaffinity(0, sizeof(cpu_set_t), &mask);
     for (int i = 0; i < cpuNo; i++) {
         printf("%d ", CPU_ISSET(i, &mask));
@@ -79,15 +87,17 @@ void thread2 () {
     sched_setaffinity(0, sizeof(cpu_set_t), &mask);
 
     //sched_getaffinity(0, sizeof(cpu_set_t), &mask);
-    printf("After selecting CPU-2\n");
-    printf("Now Available CPU is:\n");
+    printf("[BlackHole-Y] After selecting CPU-2\n");
+    printf("[BlackHole-Y] Now Available CPU is:\n");
     for (int i = 0; i < cpuNo; i++) {
         printf("%d ", CPU_ISSET(i, &mask));
     }
     printf("\n");
 
     cpuID = sched_getcpu();
-    printf("Now CPU ID: %d\n", cpuID);
+    printf("[BlackHole-Y] Now CPU ID: %d\n", cpuID);
+
+    pthread_mutex_lock(&key);
 }
 
 int main(int argc, char const *argv[]) {

@@ -4,7 +4,11 @@
 #include <unistd.h>
 #include <sys/syscall.h>
 
+pthread_mutex_t key;
+
 void thread1 () {
+    pthread_mutex_lock(&key);
+
     pid_t pid, tid;
     int cpuNo, policy;
     struct sched_param param, param2;
@@ -15,17 +19,22 @@ void thread1 () {
     printf("Nebula: Thread-X (PID: %d, TID: %d CPU: %d).\n", pid, tid, cpuNo);
 
     policy = sched_getscheduler(0);
-    printf("Scheduling Policy: %d\n", policy);
-    printf("SCHED_OTHER = %d, SCHED_BATCH = %d, SCHED_IDLE = %d, SCHED_FIFO = %d, SCHED_RR = %d\n", SCHED_OTHER, SCHED_BATCH, SCHED_IDLE, SCHED_FIFO, SCHED_RR);
+    printf("[Nebula-X] Scheduling Policy: %d\n", policy);
+    printf("[Nebula-X] SCHED_OTHER = %d, SCHED_BATCH = %d, SCHED_IDLE = %d, SCHED_FIFO = %d, SCHED_RR = %d\n", SCHED_OTHER, SCHED_BATCH, SCHED_IDLE, SCHED_FIFO, SCHED_RR);
 
     param.sched_priority = 34;
     sched_setscheduler(0, SCHED_FIFO, &param);
+    policy = sched_getscheduler(0);
     sched_getparam(0, &param2);
-    printf("Scheduling Policy: %d\n", policy);
-    printf("Scheduling Priority: %d\n", param2.sched_priority);
+    printf("[Nebula-X] Scheduling Policy: %d\n", policy);
+    printf("[Nebula-X] Scheduling Priority: %d\n", param2.sched_priority);
+
+    pthread_mutex_unlock(&key);
 }
 
 void thread2 () {
+    pthread_mutex_lock(&key);
+
     pid_t pid, tid;
     int cpuNo, policy;
     struct sched_param param, param2;
@@ -36,14 +45,17 @@ void thread2 () {
     printf("Nebula: Thread-Y (PID: %d, TID: %d CPU: %d).\n", pid, tid, cpuNo);
 
     policy = sched_getscheduler(0);
-    printf("Scheduling Policy: %d\n", policy);
-    printf("SCHED_OTHER = %d, SCHED_BATCH = %d, SCHED_IDLE = %d, SCHED_FIFO = %d, SCHED_RR = %d\n", SCHED_OTHER, SCHED_BATCH, SCHED_IDLE, SCHED_FIFO, SCHED_RR);
+    printf("[Nebula-Y] Scheduling Policy: %d\n", policy);
+    printf("[Nebula-Y] SCHED_OTHER = %d, SCHED_BATCH = %d, SCHED_IDLE = %d, SCHED_FIFO = %d, SCHED_RR = %d\n", SCHED_OTHER, SCHED_BATCH, SCHED_IDLE, SCHED_FIFO, SCHED_RR);
 
     param.sched_priority = 34;
-    sched_setscheduler(0, SCHED_FIFO, &param);
+    sched_setscheduler(0, SCHED_RR, &param);
+    policy = sched_getscheduler(0);
     sched_getparam(0, &param2);
-    printf("Scheduling Policy: %d\n", policy);
-    printf("Scheduling Priority: %d\n", param2.sched_priority);
+    printf("[Nebula-Y] Scheduling Policy: %d\n", policy);
+    printf("[Nebula-Y] Scheduling Priority: %d\n", param2.sched_priority);
+
+    pthread_mutex_unlock(&key);
 }
 
 int main(int argc, char const *argv[]) {
